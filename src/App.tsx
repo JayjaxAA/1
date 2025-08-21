@@ -18,8 +18,10 @@ const roles: RoleData[] = [
 
 function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
@@ -113,40 +115,71 @@ function App() {
   const upcomingRoles = getUpcomingRoles();
   const previousRoles = getPreviousRoles();
 
+  // Animated background particles
+  const particles = Array.from({ length: 20 }, (_, i) => i);
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 via-black to-cyan-950 relative overflow-hidden">
+      {/* Animated Background Particles */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {particles.map((particle) => (
+          <div
+            key={particle}
+            className="absolute w-1 h-1 bg-gradient-to-r from-cyan-400 to-purple-400 rounded-full opacity-30 animate-pulse"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 3}s`
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Floating orbs */}
+      <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-full blur-xl animate-pulse"></div>
+      <div className="absolute top-40 right-20 w-24 h-24 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+      <div className="absolute bottom-32 left-1/4 w-40 h-40 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full blur-xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+      
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
-        <div className="text-center mb-12">
-          <div className="flex items-center justify-center mb-6">
+        <div className={`text-center mb-12 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-10'}`}>
+          <div className="flex items-center justify-center mb-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500/30 to-cyan-500/30 rounded-full blur-2xl animate-pulse"></div>
             <img 
               src="https://gy5o3gfa7n2ynprvvvvu2d22jnydfs7gt4exvmmgvjjiqx72hthq.arweave.net/NjrtmKD7dYa-Na1rTQ9aS3Ayy-afCXqxhqpSiF_6PM8" 
               alt="Soundness.xyz Logo" 
-              className="w-16 h-16 rounded-xl"
+              className="w-20 h-20 rounded-xl relative z-10 shadow-2xl shadow-purple-500/50 ring-2 ring-purple-400/50 hover:scale-110 transition-transform duration-300"
             />
           </div>
-          <p className="text-gray-400 text-lg font-serif">Role Rotation Monitor</p>
-          <div className="flex items-center justify-center mt-4 text-gray-500">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent mb-2 font-serif">
+            Soundness.xyz
+          </h1>
+          <p className="text-gray-300 text-xl font-serif bg-gradient-to-r from-purple-300 to-cyan-300 bg-clip-text text-transparent">Role Rotation Monitor</p>
+          <div className="flex items-center justify-center mt-4 text-gray-400 bg-black/30 backdrop-blur-sm rounded-full px-4 py-2 border border-gray-600/50">
             <Clock className="w-4 h-4 mr-2" />
-            <span>{currentTime.toLocaleTimeString('id-ID')}</span>
+            <span className="font-mono">{currentTime.toLocaleTimeString('id-ID')}</span>
           </div>
         </div>
 
         {/* Current Role - Hero Section */}
-        <div className={`${currentRole.bgColor} rounded-3xl p-8 mb-12 shadow-2xl shadow-purple-500/20 border backdrop-blur-sm ring-1 ring-purple-500/30`}>
+        <div className={`${currentRole.bgColor} rounded-3xl p-8 mb-12 shadow-2xl shadow-purple-500/30 border backdrop-blur-sm ring-2 ring-purple-400/50 relative overflow-hidden transition-all duration-1000 hover:scale-[1.02] hover:shadow-3xl hover:shadow-purple-500/40 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          {/* Animated gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-transparent to-cyan-500/10 animate-pulse"></div>
+          
           <div className="text-center">
-            <div className="text-6xl mb-4">{currentRole.emoji}</div>
-            <h2 className="text-2xl font-semibold text-gray-300 mb-2">Role Hari Ini</h2>
-            <div className={`text-6xl font-bold ${currentRole.color} mb-4`}>
+            <div className="text-8xl mb-6 animate-bounce" style={{ animationDuration: '3s' }}>{currentRole.emoji}</div>
+            <h2 className="text-3xl font-semibold bg-gradient-to-r from-gray-200 to-gray-400 bg-clip-text text-transparent mb-4">Role Hari Ini</h2>
+            <div className={`text-7xl font-bold ${currentRole.color} mb-6 drop-shadow-2xl animate-pulse`}>
               {currentRole.name}
             </div>
-            <p className="text-gray-400 text-lg">
+            <p className="text-gray-300 text-xl font-medium">
               {formatDate(new Date())}
             </p>
-            <div className="mt-6 flex items-center justify-center">
-              <div className="bg-black/40 backdrop-blur-sm rounded-full px-6 py-2 flex items-center border border-gray-700 shadow-lg shadow-cyan-500/20 ring-1 ring-cyan-500/30">
-                <RotateCcw className="w-4 h-4 mr-2 text-gray-400" />
-                <span className="text-gray-300 font-medium">Reset otomatis setiap hari</span>
+            <div className="mt-8 flex items-center justify-center">
+              <div className="bg-gradient-to-r from-black/50 to-gray-900/50 backdrop-blur-sm rounded-full px-8 py-3 flex items-center border border-gray-600/50 shadow-xl shadow-cyan-500/30 ring-2 ring-cyan-400/30 hover:ring-cyan-300/50 transition-all duration-300">
+                <RotateCcw className="w-5 h-5 mr-3 text-cyan-400 animate-spin" style={{ animationDuration: '3s' }} />
+                <span className="text-gray-200 font-semibold">Reset otomatis setiap hari jam 00:00 WIB</span>
               </div>
             </div>
           </div>
@@ -154,27 +187,27 @@ function App() {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Previous Roles */}
-          <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl shadow-2xl shadow-indigo-500/20 p-6 border border-gray-800 ring-1 ring-indigo-500/30">
+          <div className={`bg-gradient-to-br from-gray-900/70 to-indigo-900/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-indigo-500/30 p-6 border border-gray-700/50 ring-2 ring-indigo-400/40 transition-all duration-1000 hover:shadow-indigo-500/50 ${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`}>
             <div className="flex items-center mb-6">
-              <Calendar className="w-5 h-5 text-gray-400 mr-2" />
-              <h3 className="text-xl font-semibold text-white">Riwayat Role</h3>
+              <Calendar className="w-6 h-6 text-indigo-400 mr-3" />
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Riwayat Role</h3>
             </div>
             <div className="space-y-3">
               {previousRoles.map((item, index) => (
-                <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-gray-800/50 border border-gray-700 hover:bg-gray-800/70 transition-all duration-200 shadow-md shadow-gray-500/10 hover:shadow-lg hover:shadow-blue-500/20 hover:ring-1 hover:ring-blue-500/30">
+                <div key={index} className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-r from-gray-800/60 to-gray-700/40 border border-gray-600/50 hover:from-gray-700/70 hover:to-gray-600/50 transition-all duration-300 shadow-lg shadow-gray-500/20 hover:shadow-xl hover:shadow-blue-500/30 hover:ring-2 hover:ring-blue-400/40 hover:scale-[1.02] group">
                   <div className="flex items-center">
-                    <span className="text-2xl mr-3">{item.role.emoji}</span>
+                    <span className="text-3xl mr-4 group-hover:scale-110 transition-transform duration-300">{item.role.emoji}</span>
                     <div>
-                      <div className={`font-semibold ${item.role.color}`}>
+                      <div className={`font-bold text-lg ${item.role.color} drop-shadow-lg`}>
                         {item.role.name}
                       </div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-400 font-medium">
                         {formatShortDate(item.date)}
                       </div>
                     </div>
                   </div>
-                  <div className="text-gray-600">
-                    <ChevronRight className="w-4 h-4" />
+                  <div className="text-gray-500 group-hover:text-blue-400 transition-colors duration-300">
+                    <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
                   </div>
                 </div>
               ))}
@@ -182,28 +215,28 @@ function App() {
           </div>
 
           {/* Upcoming Roles */}
-          <div className="bg-gray-900/60 backdrop-blur-sm rounded-2xl shadow-2xl shadow-emerald-500/20 p-6 border border-gray-800 ring-1 ring-emerald-500/30">
+          <div className={`bg-gradient-to-br from-gray-900/70 to-emerald-900/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-emerald-500/30 p-6 border border-gray-700/50 ring-2 ring-emerald-400/40 transition-all duration-1000 hover:shadow-emerald-500/50 ${mounted ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
             <div className="flex items-center mb-6">
-              <Calendar className="w-5 h-5 text-gray-400 mr-2" />
-              <h3 className="text-xl font-semibold text-white">Jadwal Mendatang</h3>
+              <Calendar className="w-6 h-6 text-emerald-400 mr-3" />
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Jadwal Mendatang</h3>
             </div>
             <div className="space-y-3">
               {upcomingRoles.map((item, index) => (
-                <div key={index} className={`flex items-center justify-between p-4 rounded-lg border transition-all duration-200 hover:shadow-lg hover:scale-[1.02] hover:shadow-cyan-500/30 hover:ring-1 hover:ring-cyan-500/40 ${item.role.bgColor} backdrop-blur-sm shadow-md shadow-gray-500/10`}>
+                <div key={index} className={`flex items-center justify-between p-5 rounded-xl border transition-all duration-300 hover:shadow-xl hover:scale-[1.02] hover:shadow-cyan-500/40 hover:ring-2 hover:ring-cyan-400/50 ${item.role.bgColor} backdrop-blur-sm shadow-lg shadow-gray-500/20 group`}>
                   <div className="flex items-center">
-                    <span className="text-2xl mr-3">{item.role.emoji}</span>
+                    <span className="text-3xl mr-4 group-hover:scale-110 transition-transform duration-300">{item.role.emoji}</span>
                     <div>
-                      <div className={`font-semibold ${item.role.color}`}>
+                      <div className={`font-bold text-lg ${item.role.color} drop-shadow-lg`}>
                         {item.role.name}
                       </div>
-                      <div className="text-sm text-gray-400">
+                      <div className="text-sm text-gray-400 font-medium">
                         {formatShortDate(item.date)}
                       </div>
                     </div>
                   </div>
                   <div className="text-gray-500">
                     {index === 0 && (
-                      <span className="text-xs bg-yellow-500/20 text-yellow-400 px-2 py-1 rounded-full font-medium border border-yellow-500/30">
+                      <span className="text-xs bg-gradient-to-r from-yellow-500/30 to-orange-500/30 text-yellow-300 px-3 py-1 rounded-full font-bold border border-yellow-400/50 shadow-lg shadow-yellow-500/30 animate-pulse">
                         Besok
                       </span>
                     )}
@@ -215,59 +248,61 @@ function App() {
         </div>
 
         {/* Role Legend */}
-        <div className="mt-12 bg-gray-900/60 backdrop-blur-sm rounded-2xl shadow-2xl shadow-orange-500/20 p-6 border border-gray-800 ring-1 ring-orange-500/30">
-          <h3 className="text-xl font-semibold text-white mb-6 text-center">Semua Role</h3>
+        <div className={`mt-12 bg-gradient-to-br from-gray-900/70 to-orange-900/50 backdrop-blur-sm rounded-2xl shadow-2xl shadow-orange-500/30 p-8 border border-gray-700/50 ring-2 ring-orange-400/40 transition-all duration-1000 hover:shadow-orange-500/50 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          <h3 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent mb-8 text-center">Semua Role</h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {roles.map((role, index) => (
-              <div key={index} className={`${role.bgColor} rounded-lg p-4 text-center border backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/30 hover:ring-1 hover:ring-purple-500/40 shadow-md shadow-gray-500/10`}>
-                <div className="text-3xl mb-2">{role.emoji}</div>
-                <div className={`font-semibold ${role.color}`}>{role.name}</div>
-                <div className="text-xs text-gray-500 mt-1">Role {index + 1}</div>
+              <div key={index} className={`${role.bgColor} rounded-xl p-6 text-center border backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:shadow-xl hover:shadow-purple-500/40 hover:ring-2 hover:ring-purple-400/50 shadow-lg shadow-gray-500/20 group cursor-pointer`}>
+                <div className="text-4xl mb-3 group-hover:scale-125 transition-transform duration-300">{role.emoji}</div>
+                <div className={`font-bold text-lg ${role.color} drop-shadow-lg`}>{role.name}</div>
+                <div className="text-xs text-gray-400 mt-2 font-medium">Role {index + 1}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center mt-12 text-gray-500 space-y-4">
+        <div className={`text-center mt-12 text-gray-400 space-y-6 transition-all duration-1000 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           
-          <p className="text-sm mt-2">Role rotation: Zippy → Bloop → Blu → Wava → Echo → (repeat)</p>
+          <p className="text-lg font-medium bg-gradient-to-r from-gray-300 to-gray-500 bg-clip-text text-transparent">
+            Role rotation: <span className="text-purple-400">Zippy</span> → <span className="text-blue-400">Bloop</span> → <span className="text-cyan-400">Blu</span> → <span className="text-emerald-400">Wava</span> → <span className="text-orange-400">Echo</span> → (repeat)
+          </p>
           
           {/* Build by and Social Links */}
-          <div className="mt-6 space-y-4">
-            <p className="text-gray-400">
-              Build by  <span className="font-semibold text-white">XBerry</span>
+          <div className="mt-8 space-y-6">
+            <p className="text-lg">
+              Build by <span className="font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">XBerry</span>
             </p>
               
-            <div className="flex items-center justify-center space-x-6">
+            <div className="flex items-center justify-center space-x-8">
                 <a 
                   href="https://github.com/dlzvy" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200 hover:scale-110 transform"
+                  className="flex items-center space-x-2 text-gray-400 hover:text-purple-400 transition-all duration-300 hover:scale-125 transform bg-gray-800/50 px-4 py-2 rounded-full border border-gray-600/50 hover:border-purple-400/50 hover:shadow-lg hover:shadow-purple-500/30"
                 >
                   
-                  <span className="text-sm font-medium">GitHub</span>
+                  <span className="text-sm font-bold">GitHub</span>
                 </a>
                 
                 <a 
                   href="https://x.com/XBerryAO" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200 hover:scale-110 transform"
+                  className="flex items-center space-x-2 text-gray-400 hover:text-cyan-400 transition-all duration-300 hover:scale-125 transform bg-gray-800/50 px-4 py-2 rounded-full border border-gray-600/50 hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/30"
                 >
                   
-                  <span className="text-sm font-medium">X</span>
+                  <span className="text-sm font-bold">X</span>
                 </a>
                 
                 <a 
                   href="https://t.me/dlzvy" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-2 text-gray-400 hover:text-white transition-colors duration-200 hover:scale-110 transform"
+                  className="flex items-center space-x-2 text-gray-400 hover:text-emerald-400 transition-all duration-300 hover:scale-125 transform bg-gray-800/50 px-4 py-2 rounded-full border border-gray-600/50 hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-500/30"
                 >
                   
-                  <span className="text-sm font-medium">Telegram</span>
+                  <span className="text-sm font-bold">Telegram</span>
                 </a>
               </div>
             </div>
